@@ -6,6 +6,9 @@ Built with Next.js, Mapbox, and FastAPI.
 
 > ⚠️ **Currently under active development** - features and functionality are subject to change.
 
+## Data
+- The CSV files can be found on the official National Highway Traffic Safety Administration (NHTSA) website [here](https://www.nhtsa.gov/file-downloads?p=nhtsa/downloads/FARS/2023/National/).
+
 ## Features
 
 - Interactive map interface powered by Mapbox
