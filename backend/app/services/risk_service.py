@@ -58,3 +58,27 @@ def score_route(coordinates: list[list[float]], buffer_feet: float = 250) -> dic
         "risk_score": round(risk_score, 3),
         "buffer_feet": buffer_feet
     }
+
+def score_multiple_routes(routes: list, buffer_feet: float = 250) -> list[dict]:
+    scored_routes = []
+
+    for route in routes:
+        result = score_route(
+            coordinates=route.coordinates,
+            buffer_feet=buffer_feet
+        )
+
+        scored_routes.append({
+            "route_name": route.route_name,
+            "coordinates": route.coordinates,
+            **result
+        })
+
+    scored_routes.sort(key=lambda route: route["risk_score"])
+
+    # route ranking
+    for index, route in enumerate(scored_routes, start=1):
+        route["rank"] = index
+        route["is_safest"] = index == 1
+
+    return scored_routes
