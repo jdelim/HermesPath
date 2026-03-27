@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.app.api.routes import router
+from app.api.routes import router
 
 app = FastAPI(
     title="HermesPath API",

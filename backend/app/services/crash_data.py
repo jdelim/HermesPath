@@ -3,7 +3,8 @@ import pandas as pd
 import geopandas as gpd
 from shapely.geometry import LineString
 
-DATA_DIR = Path("FARS2023NationalCSV")
+BASE_DIR = Path(__file__).resolve().parents[3]
+DATA_DIR = BASE_DIR / "FARS2023NationalCSV"
 ACCIDENT_CSV = DATA_DIR / "accident.csv"
 
 # read CSV, clean long/lat values, remove rows that dont have it, convert rows into map points
