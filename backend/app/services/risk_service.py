@@ -6,9 +6,10 @@ from app.services.crash_data import load_accidents_geo
 FEET_TO_METERS = 0.3048
 METERS_TO_MILES = 0.000621371
 
-def build_route_line(start: list[float], end: list[float]) -> LineString:
-    # shapely expects (lon, lat)
-    return LineString([(start[1], start[0]), (end[1], end[0])])
+def build_route_line(coordinates: list[list[float]]) -> LineString:
+    # origin is [lat, lon] but shapely expects (lon, lat)
+    line_points = [(point[1], point[0]) for point in coordinates]
+    return LineString(line_points)
 
 def count_nearby_fatal_crashes(route_line: LineString, buffer_feet: float = 250) -> int:
     accidents = load_accidents_geo()
@@ -42,8 +43,8 @@ def calculate_route_miles(route_line: LineString) -> float:
 
     return route_length_meters * METERS_TO_MILES
 
-def score_route(start: list[float], end: list[float], buffer_feet: float = 250) -> dict:
-    route_line = build_route_line(start, end)
+def score_route(coordinates: list[list[float]], buffer_feet: float = 250) -> dict:
+    route_line = build_route_line(coordinates)
     nearby_crashes = count_nearby_fatal_crashes(route_line, buffer_feet)
     route_miles = calculate_route_miles(route_line)
 

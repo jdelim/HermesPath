@@ -7,12 +7,10 @@ router = APIRouter()
 @router.post("/route/test")
 async def test_route(request: RouteRequest):
     result = score_route (
-        start=request.start,
-        end=request.end,
+        coordinates=request.coordinates,
         buffer_feet=request.buffer_feet
     )
     return {
-        "start": request.start,
-        "end": request.end,
+        "coordinates": request.coordinates,
         **result
     }
