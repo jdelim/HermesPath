@@ -4,10 +4,19 @@ import { MapContainer, TileLayer, Polyline, CircleMarker, Popup, useMap } from "
 import { LatLngBounds } from "leaflet";
 import { useEffect } from "react";
 
+type CrashPoint = {
+  st_case: number | null;
+  latitude: number;
+  longitude: number;
+  year: number | null;
+  state: string | null;
+};
+
 type RouteResult = {
   route_name: string;
   coordinates: number[][];
   nearby_crashes: number;
+  crash_points: CrashPoint[];
   route_miles: number;
   risk_score: number;
   buffer_feet: number;
@@ -21,7 +30,12 @@ function FitToRoutes({ routes }: { routes: RouteResult[] }) {
   useEffect(() => {
     if (routes.length === 0) return;
 
-    const allPoints = routes.flatMap((route) => route.coordinates);
+    const routePoints = routes.flatMap((route) => route.coordinates);
+    const crashPoints = routes.flatMap((route) =>
+      route.crash_points.map((point) => [point.latitude, point.longitude] as [number, number]),
+    );
+
+    const allPoints = [...routePoints, ...crashPoints];
     const bounds = new LatLngBounds(allPoints as [number, number][]);
     map.fitBounds(bounds, { padding: [32, 32] });
   }, [map, routes]);
@@ -80,6 +94,29 @@ export default function RouteMap({ routes }: { routes: RouteResult[] }) {
               <CircleMarker center={end} radius={6} pathOptions={{ color }}>
                 <Popup>End of {route.route_name}</Popup>
               </CircleMarker>
+
+              {route.crash_points.map((crash, index) => (
+                <CircleMarker
+                  key={`${route.route_name}-${crash.st_case ?? index}`}
+                  center={[crash.latitude, crash.longitude]}
+                  radius={5}
+                  pathOptions={{
+                    color: "#dc2626",
+                    fillColor: "#ef4444",
+                    fillOpacity: 0.85,
+                    weight: 1,
+                  }}
+                >
+                  <Popup>
+                    <div className="text-sm">
+                      <div className="font-semibold">Crash point</div>
+                      <div>Route: {route.route_name}</div>
+                      <div>Case: {crash.st_case ?? "Unknown"}</div>
+                      <div>Year: {crash.year ?? "Unknown"}</div>
+                    </div>
+                  </Popup>
+                </CircleMarker>
+              ))}
             </div>
           );
         })}
